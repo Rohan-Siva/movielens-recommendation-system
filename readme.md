@@ -1,50 +1,102 @@
-# **End-to-End MovieLens Recommendation System (WIP)**
+# End-to-End MovieLens Recommendation System
 
-This repository contains an in-progress end-to-end recommendation system built using traditional and deep learning–based approaches. The goal is to design, evaluate, and deploy a scalable recommender pipeline suitable for real-world applications such as e-commerce, streaming platforms, and social feeds.
+This repository contains a complete end-to-end recommendation system built using traditional and deep learning–based approaches. It is designed to be a scalable recommender pipeline suitable for real-world applications.
 
 ## **Project Overview**
 
-This project explores multiple recommendation strategies:
+This project implements multiple recommendation strategies:
 
-* **Collaborative Filtering** (user-based & item-based)
-* **Content-Based Filtering**
-* **Neural Collaborative Filtering (NCF)** with deep learning
-* **(Planned)** Graph-based recommendation using GNNs
-* **REST API** for serving real-time recommendations
-
-The system will use the **MovieLens** or **LastFM** dataset and will implement industry-standard ranking metrics such as **NDCG**, **Hit Rate**, **MRR**, and **Recall@K**.
+* **Collaborative Filtering**: User-based (KNN) implemented with Scikit-learn.
+* **Neural Collaborative Filtering (NCF)**: A deep learning model using PyTorch with embedding layers for users and items.
+* **Graph Neural Networks (GNN)**: A heterogeneous graph model using PyTorch Geometric to capture complex user-item interactions.
+* **REST API**: A Flask-based API served with Gunicorn for real-time predictions.
+* **Dockerized Deployment**: Fully containerized application for easy deployment.
 
 ## **Tech Stack**
 
-* **Python**
-* **ML:** PyTorch, TensorFlow, Scikit-learn
-* **API:** FastAPI or Flask
-* **Deployment:** Docker
-* **Data:** MovieLens 20M / 1M or LastFM
+* **Language**: Python 3.9+
+* **Deep Learning**: PyTorch, PyTorch Geometric
+* **Machine Learning**: Scikit-learn, Pandas, NumPy
+* **API**: Flask, Gunicorn
+* **Containerization**: Docker
+* **Data**: MovieLens Latest Small Dataset
 
-## **Roadmap (Planned)**
+## **Features**
 
-1. **Data Collection & EDA**
-2. **Baseline Collaborative & Content Models**
-3. **Neural Collaborative Filtering**
-4. **Optional:** Graph Neural Networks with PyTorch Geometric
-5. **Model Serving API + Caching**
-6. **Containerized Deployment**
+* **Data Pipeline**: Automated scripts for downloading and preprocessing MovieLens data.
+* **EDA**: Jupyter notebook for Exploratory Data Analysis (sparsity, long-tail distribution).
+* **Model Training**: Scripts to train NCF and GNN models.
+* **Evaluation**: Implementation of NDCG@K, Recall@K, and Precision@K metrics.
+* **Serving**: Production-ready API endpoint returning JSON recommendations.
 
-## **Repository Structure (Planned)**
+## **Setup & Installation**
 
-```
-recommendation-system/
-├── data/
-├── models/
-├── evaluation/
-├── api/
-├── notebooks/
-├── Dockerfile
-└── README.md
+### 1. Clone the repository
+```bash
+git clone https://github.com/Rohan-Siva/movielens-recommendation-system.git
+cd movielens-recommendation-system
 ```
 
-## **Status**
+### 2. Install Dependencies
+It is recommended to use a virtual environment.
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r api/requirements.txt
+```
 
-**Work in progress.**
-More details, experiments, and results will be added as the project develops.
+### 3. Data Setup
+Download and preprocess the data:
+```bash
+python data/download.py
+python data/preprocess.py
+```
+
+### 4. Train Models
+Train the Neural Collaborative Filtering model:
+```bash
+python models/neural_collaborative_filtering.py
+```
+(Optional) Run the GNN model:
+```bash
+python models/gnn_recommender.py
+```
+
+## **Running the API**
+
+### Local Development
+```bash
+export PYTHONPATH=$PYTHONPATH:.
+python api/app.py
+```
+
+### Production (Gunicorn)
+```bash
+gunicorn --bind 0.0.0.0:5002 api.app:app
+```
+
+### Docker
+Build and run the container:
+```bash
+docker build -t recommender-api .
+docker run -p 5002:5002 recommender-api
+```
+
+## **API Usage**
+
+**Endpoint**: `POST /recommend`
+
+**Request Body**:
+```json
+{
+    "user_id": 1,
+    "n_recommendations": 5
+}
+```
+
+**Example Curl**:
+```bash
+curl -X POST "http://localhost:5002/recommend" \
+     -H "Content-Type: application/json" \
+     -d '{"user_id": 1, "n_recommendations": 5}'
+```
